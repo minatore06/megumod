@@ -23,6 +23,14 @@ client.on('ready', () =>{
 
 client.on('message', message => {
     if(!message.content.startsWith(prefix) || message.author.bot) return
+
+    const messageAr = message.content.slice(prefix.length).split(/ +/)
+    const command = messageAr.shift().toLowerCase()
+    const args = messageAr.slice(1)
+
+    if (client.commands.has(commandName)){//switch o argomenti uguali (alias?)
+        client.commands.get(commandName).execute(message, args, client);
+    }
 })
 
 client.login(token)

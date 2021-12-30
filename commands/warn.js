@@ -3,15 +3,18 @@ const fs = require('fs')
 module.exports = 
 {
     name:'warn',
-    description:'Aggiunge un warn ad un utente per avvertirlo di un comportamento scorretto',
+    description:'Aggiunge un warn ad un utente per salvare un comportamento scorretto',
     async execute(message, args, config, Discord)
     {
         let target = args[0]
         let comment = args.slice(1).join(" ")
 
-        if(!target)return message.reply("Nessun utente menzionato")
-        if(message.mentions.members.first())target = await message.mentions.members.first()
-        else target = await message.guild.members.fetch(target)
+        try {
+            if(message.mentions.members.first())target = await message.mentions.members.first()
+            else target = await message.guild.members.fetch(target)
+        } catch (error) {
+            return message.reply("Nessun utente menzionato")
+        }
 
         let warn = {
             target:target.id,
@@ -27,7 +30,7 @@ module.exports =
             warnings[parseInt(Object.keys(warnings).at(-1))+1] = warn;
             fs.writeFile('./warnings.json', JSON.stringify(warnings), (err) => {
                 if(err)return console.log(err)
-                message.channel.send(`${target} warnato per ${comment}`);
+                message.channel.send(`${target} warnato per \`${comment}\``);
                 message.delete();
             })
 
